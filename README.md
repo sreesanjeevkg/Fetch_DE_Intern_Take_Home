@@ -31,7 +31,7 @@ Before running this project, ensure that you have the following prerequisite ins
 1. Clone the repository to your local machine: git clone https://github.com/sreesanjeevkg/fetch_de_take_home.git
 2. Once Cloned, Run the dockercompose.yml file using the docker desktop
      - It will set up the Zookeeper and Kafka Server. It will also spin up a kafka producer which messages a topic called 'user-login' every second
-3. Run oltp, olap python programs - pass the arguments and config according to ur prefernce TODO: Make changes here
+3. Run oltp, olap python programs - pass the arguments and config according to ur prefernce _TODO: Make changes here_
 
 ## Design Choices and why i choose them
 
