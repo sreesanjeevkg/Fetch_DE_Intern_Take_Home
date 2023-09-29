@@ -37,17 +37,20 @@ Before running this project, ensure that you have the following prerequisite ins
 
 **Seperation of Consumers :** The Consumers have been seperated for real-time and OLAP processing. The main reason for this design choice was performance isolation, by separating real-time and OLAP processing, we reduce the risk of performance degradation in the real-time consumer due to resource-intensive OLAP operations. This design choice helps maintain a responsive real-time processing pipeline.
 
+**Replication Factor :** The Kafka topic "processed-user-login-data has a replication factor of 2 so that even if 1 broker goes down it can replicate itself in another one
+
 ## How would you deploy this application in production?
 
-TODO: Make changes here
+** Using docker or kubernetes for deployment : ** We can package all our code to a docker image for a efficient production pipeline.
 
 ## What other components would you want to add to make this production ready?
 
-TODO: Make changes here
+
+**Partitions based on a specific key / Dynamic Partitions : ** In production we could have partitions based on specific attributes maybe like locale or type of device, it can have wide range of benefits while reading or any other analysis tasks. We can also try Dynamic partitions so that there are no unnecessary skew in our partitions.
+
 
 ## How can this application scale with a growing dataset?
 
-TODO: Make changes here
-
+**More than 1 consumer in the consumer group : ** The "user-login" producer produces to just 1 partition , which means we can have only 1 consumer. We should make to deliver it to multiple partitions so that we can make use of the "distributed" kakfka consumers to consume messages
 
 
