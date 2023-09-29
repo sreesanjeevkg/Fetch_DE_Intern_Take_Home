@@ -41,16 +41,16 @@ Before running this project, ensure that you have the following prerequisite ins
 
 ## How would you deploy this application in production?
 
-** Using docker or kubernetes for deployment : ** We can package all our code to a docker image for a efficient production pipeline.
+**Using docker or kubernetes for deployment :** We can package all our code to a docker image for a efficient production pipeline.
 
 ## What other components would you want to add to make this production ready?
 
 
-**Partitions based on a specific key / Dynamic Partitions : ** In production we could have partitions based on specific attributes maybe like locale or type of device, it can have wide range of benefits while reading or any other analysis tasks. We can also try Dynamic partitions so that there are no unnecessary skew in our partitions.
+**Partitions based on a specific key / Dynamic Partitions :** In production we could have partitions based on specific attributes maybe like locale or type of device, it can have wide range of benefits while reading or any other analysis tasks. We can also try Dynamic partitions so that there are no unnecessary skew in our partitions.
 
 
 ## How can this application scale with a growing dataset?
 
-**More than 1 consumer in the consumer group : ** The "user-login" producer produces to just 1 partition , which means we can have only 1 consumer. We should make to deliver it to multiple partitions so that we can make use of the "distributed" kakfka consumers to consume messages
+**More than 1 consumer in the consumer group :** The "user-login" producer produces to just 1 partition , which means we can have only 1 consumer. We should make to deliver it to multiple partitions so that we can make use of the "distributed" kakfka consumers to consume messages
 
 
