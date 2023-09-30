@@ -11,9 +11,7 @@ kafka_helper = KafkaHelper()
 olap_logger = logging.getLogger('olap-system')
 kafka_helper.setup_logger(logger_level=logging.INFO, logger_filename='olap.log', logger_instance=olap_logger)
 
-BOOTSTRAP_SERVERS = 'localhost:29092'
-
-new_topics = [NewTopic(topic, num_partitions=3, replication_factor=2) for topic in ["proccesed_data"]]
+new_topics = [NewTopic(topic, num_partitions=3, replication_factor=1) for topic in ["processed_data"]]
 
 required_fields = ['user_id', 'app_version', 'device_type', 'ip', 'locale', 'device_id', 'timestamp']
 
@@ -27,50 +25,54 @@ placeholder_values = {
     'timestamp': 'missing_timestamp'
 }
 
-consumer_olap = Consumer({'bootstrap.servers': [BOOTSTRAP_SERVERS]
-                                  , 'group.id': 'consumer-olap'
-                                  , 'auto.offset.reset': 'earliest'
-                                  , 'auto.commit.interval.ms': 1000
-                                  , 'fetch.wait.max.ms': 20000})
+consumer_olap = Consumer({'bootstrap.servers': 'localhost:9092'
+                             , 'group.id': 'consumer-olap'
+                             , 'auto.offset.reset': 'earliest'
+                             , 'auto.commit.interval.ms': 1000
+                             , 'fetch.wait.max.ms': 20000})
 
 olap_logger.info('Available topics to consume: %s', consumer_olap.list_topics().topics)
 
 consumer_olap.subscribe(['user-login'])
 olap_logger.info("Polling user-login topic")
 
+
 def main():
     a = AdminClient({'bootstrap.servers': 'localhost:9092'})
     fs = a.create_topics(new_topics)
     kafka_helper.check_topic_creation_status(fs)
 
-    producer = Producer(bootstrap_servers=[BOOTSTRAP_SERVERS])
+    producer = Producer({'bootstrap.servers': 'localhost:9092'})
 
     while True:
         msg = consumer_olap.poll()
         if msg is None:
-            consumer_olap.info('No message received')
+            olap_logger.info('No message received')
             continue
         if msg.error():
-            consumer_olap.info('Error: {}'.format(msg.error(), msg.topic(), msg.partition(), msg.offset()))
+            olap_logger.info('Error: {}'.format(msg.error(), msg.topic(), msg.partition(), msg.offset()))
             continue
         data = msg.value().decode('utf-8')
         data = json.loads(data)
-        ## TODO: Do Cleaning, other transformation tasks
+        # TODO: Do Cleaning, other transformation tasks
         if all(field in data for field in required_fields):
             data['timestamp'] = datetime.utcfromtimestamp(data['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
-            producer.produce(topic='processed-data', value=data)
+            data_json = json.dumps(data)
+            producer.produce(topic='processed-data', value=data_json.encode('utf-8'))
         else:
             missing_fields = [field for field in required_fields if field not in data]
             olap_logger.info("Missing fields in data: %s", missing_fields)
             for missing_field in missing_fields:
-                data[missing_field] = placeholder_values[
-                    missing_field]  # Populating the missing fields with placeholder
+                data[missing_field] = placeholder_values[missing_field] # Populating the missing fields with placeholder
             data['timestamp'] = datetime.utcfromtimestamp(int(data['timestamp'])).strftime('%Y-%m-%d %H:%M:%S')
-            producer.produce(topic='processed-data', value=data)
+            data_json = json.dumps(data)
+            producer.produce(topic='processed-data', value=data_json.encode('utf-8'))
 
         olap_logger.info(data)
 
     consumer_olap.close()
+    producer.flush()
+
 
 if __name__ == '__main__':
     try:
