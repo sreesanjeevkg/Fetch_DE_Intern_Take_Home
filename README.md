@@ -8,7 +8,6 @@ Fetch Data Engineer Take Home Assessment : This project demonstrates a real-time
 
 ![kafka3](https://github.com/sreesanjeevkg/Sanjeev_kafka/assets/32449066/6bf32c00-ceaf-41dd-a9d7-627ce58e9a91)
 
-
 **NOTE**
 - Cannot keep replication factor more than 1 because there is a single broker
 - Realtime_consumer is just printing the data not publishing to S3
@@ -19,12 +18,12 @@ Fetch Data Engineer Take Home Assessment : This project demonstrates a real-time
 - OLAP data processing with the ability to transform and aggregate data.
 - Writing processed data to another Kafka topic for further analysis.
 - Centralized Kafka configuration management.
-- Added fields to find the region where the user logins the most and the time period in which they login the most
+- Added fields to find the region where the user logins the most and the time period in which they login the most.
+- Converted Unix timestamp to human readable format.
 
 ## Prerequisites
 
-Before running this project, ensure that you have the following prerequisite installed and configured:
-
+Ensure that you have the following prerequisite installed and configured:
 
 - git
 - docker
@@ -32,7 +31,6 @@ Before running this project, ensure that you have the following prerequisite ins
   - Mac - https://medium.com/featurepreneur/setting-up-docker-on-a-mac-2d3ab93801e4
 - python3
           
-
 ## Installation
 
 1. Clone the repository to your local machine: git clone https://github.com/sreesanjeevkg/fetch_de_take_home.git
@@ -63,16 +61,17 @@ Before running this project, ensure that you have the following prerequisite ins
 
 ## How would you deploy this application in production?
 
-**Making use of CI/CD Pipeline**
+1. Making use of CI/CD Pipeline
+2. Using Kubernetes for Container Orchestration
+3. Solution for Montoring the logs and fallback mechanism
+4. Graceful exit from Consumer/ Producer
 
 ## What other components would you want to add to make this production ready?
 
-**Partitions based on a specific key / Dynamic Partitions :** In production we could have partitions based on specific attributes maybe like locale or type of device, it can have wide range of benefits while reading or any other analysis tasks. We can also try Dynamic partitions so that there are no unnecessary skew in our partitions.
+**- Partitions based on a specific key / Dynamic Partitions :** In production we could have partitions based on specific attributes maybe like locale or type of device, it can have wide range of benefits while reading or any other analysis tasks. We can also try Dynamic partitions so that there are no unnecessary skew in our partitions.
 
 ## How can this application scale with a growing dataset?
 
-**More than 1 consumer in the consumer group :** The "user-login" producer produces to just 1 partition , which means we can have only 1 consumer. We should make to deliver it to multiple partitions so that we can make use of the "distributed" kakfka consumers to consume messages
+**- More than 1 consumer in the consumer group :** The "user-login" producer produces to just 1 partition , which means we can have only 1 consumer. We should make to deliver it to multiple partitions so that we can make use of the "distributed" kakfka consumers to consume messages
 
-**Increasing Batch Size and Async Message Processing**
-
-
+**- Increasing Batch Size and Async Message Processing**
