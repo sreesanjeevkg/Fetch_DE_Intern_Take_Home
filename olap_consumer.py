@@ -25,6 +25,13 @@ placeholder_values = {
     'timestamp': 'missing_timestamp'
 }
 
+states = {
+    "East": ["NY", "NJ", "PA", "MA", "CT", "RI", "VT", "NH", "ME", "DE", "MD", "VA", "WV", "NC", "SC", "GA", "FL"],
+    "South": ["AL", "MS", "LA", "TX", "AR", "TN", "KY", "OK"],
+    "Midwest": ["OH", "IN", "IL", "MI", "WI", "MN", "IA", "MO", "KS", "NE", "SD", "ND"],
+    "West": ["CA", "OR", "WA", "NV", "AZ", "UT", "CO", "WY", "MT", "ID", "NM", "AK", "HI"]
+}
+
 consumer_olap = Consumer({'bootstrap.servers': 'localhost:9092'
                              , 'group.id': 'consumer-olap'
                              , 'auto.offset.reset': 'earliest'
@@ -35,6 +42,30 @@ olap_logger.info('Available topics to consume: %s', consumer_olap.list_topics().
 
 consumer_olap.subscribe(['user-login'])
 olap_logger.info("Polling user-login topic")
+
+
+def region(states, data):
+    if data is not None:
+        for region, states in states.items():
+            if data["locale"] in states:
+                data["region"] = region
+                break
+        if data["region"] is None:
+            data["region"] = "Unknown"
+
+    return data
+
+def time_flg(data, hour):
+    if 6 <= hour < 12:
+        data["time_flg"] = 1
+    elif 12 <= hour < 18:
+        data["time_flg"] = 2
+    elif 18 <= hour < 22:
+        data["time_flg"] = 3
+    else:
+        data["time_flg"] = 4
+
+    return data
 
 
 def main():
@@ -57,6 +88,9 @@ def main():
         # TODO: Do Cleaning, other transformation tasks
         if all(field in data for field in required_fields):
             data['timestamp'] = datetime.utcfromtimestamp(data['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
+            hour = datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S').hour
+            data = time_flg(data, hour)
+            data = region(states, data)
             data_json = json.dumps(data)
             producer.produce(topic='processed-data', value=data_json.encode('utf-8'))
         else:
@@ -64,7 +98,10 @@ def main():
             olap_logger.info("Missing fields in data: %s", missing_fields)
             for missing_field in missing_fields:
                 data[missing_field] = placeholder_values[missing_field] # Populating the missing fields with placeholder
-            data['timestamp'] = datetime.utcfromtimestamp(int(data['timestamp'])).strftime('%Y-%m-%d %H:%M:%S')
+            data['timestamp'] = datetime.utcfromtimestamp(data['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
+            hour = datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S').hour
+            data = time_flg(data, hour)
+            data = region(states, data)
             data_json = json.dumps(data)
             producer.produce(topic='processed-data', value=data_json.encode('utf-8'))
 
