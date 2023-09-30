@@ -44,7 +44,7 @@ Before running this project, ensure that you have the following prerequisite ins
    ```
    python3 olap_consumer.py
    ```
-7.  Run realtime_consumer.py to start the consumer code which just consumes the message from the kafka topic and dumps them as a json. This is realtime and you will be able to use the messages faster than olap_consumer.
+6.  Run realtime_consumer.py to start the consumer code which just consumes the message from the kafka topic and dumps them as a json. This is realtime and you will be able to use the messages faster than olap_consumer.
    ```
    python3 realtime_consumer.py
    ```
