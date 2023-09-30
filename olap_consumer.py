@@ -44,6 +44,14 @@ consumer_olap.subscribe(['user-login'])
 olap_logger.info("Polling user-login topic")
 
 
+def process_data(data, states):
+    hour = datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S').hour
+    data = time_flg(data, hour)
+    data = region(states, data)
+    data_json = json.dumps(data)
+    return data_json
+
+
 def region(states, data):
     if data is not None:
         for region, states in states.items():
@@ -88,10 +96,7 @@ def main():
         # TODO: Do Cleaning, other transformation tasks
         if all(field in data for field in required_fields):
             data['timestamp'] = datetime.utcfromtimestamp(data['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
-            hour = datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S').hour
-            data = time_flg(data, hour)
-            data = region(states, data)
-            data_json = json.dumps(data)
+            data_json = process_data(data, states)
             producer.produce(topic='processed-data', value=data_json.encode('utf-8'))
         else:
             missing_fields = [field for field in required_fields if field not in data]
@@ -99,10 +104,7 @@ def main():
             for missing_field in missing_fields:
                 data[missing_field] = placeholder_values[missing_field] # Populating the missing fields with placeholder
             data['timestamp'] = datetime.utcfromtimestamp(data['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
-            hour = datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S').hour
-            data = time_flg(data, hour)
-            data = region(states, data)
-            data_json = json.dumps(data)
+            data_json = process_data(data, states)
             producer.produce(topic='processed-data', value=data_json.encode('utf-8'))
 
         olap_logger.info(data)
