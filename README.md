@@ -6,7 +6,8 @@ Fetch Data Engineer Take Home Assessment : This project demonstrates a real-time
 
 ## Project Architecture
 
-![kafka3](https://github.com/sreesanjeevkg/fetch_de_take_home/assets/32449066/da9a5b3b-61ba-43da-b698-6e6519ba2dfc)
+![kafka3](https://github.com/sreesanjeevkg/Sanjeev_kafka/assets/32449066/6bf32c00-ceaf-41dd-a9d7-627ce58e9a91)
+
 
 **NOTE**
 - Cannot keep replication factor more than 1 because there is a single broker
@@ -18,6 +19,7 @@ Fetch Data Engineer Take Home Assessment : This project demonstrates a real-time
 - OLAP data processing with the ability to transform and aggregate data.
 - Writing processed data to another Kafka topic for further analysis.
 - Centralized Kafka configuration management.
+- Added fields to find the region where the user logins the most and the time period in which they login the most
 
 ## Prerequisites
 
