@@ -6,7 +6,7 @@ Fetch Data Engineer Take Home Assessment : This project demonstrates a real-time
 
 ## Project Architecture
 
-![kafka](https://github.com/sreesanjeevkg/fetch_de_take_home/assets/32449066/6e706d61-ad94-4fe9-bfdd-2237691ef9f8)
+![kafka3](https://github.com/sreesanjeevkg/fetch_de_take_home/assets/32449066/da9a5b3b-61ba-43da-b698-6e6519ba2dfc)
 
 ### Features
 
@@ -24,14 +24,30 @@ Before running this project, ensure that you have the following prerequisite ins
 - docker
   - Windows - https://medium.com/devops-with-valentine/how-to-install-docker-on-windows-10-11-step-by-step-83074a80e6f9
   - Mac - https://medium.com/featurepreneur/setting-up-docker-on-a-mac-2d3ab93801e4
+- python3
           
 
 ## Installation
 
 1. Clone the repository to your local machine: git clone https://github.com/sreesanjeevkg/fetch_de_take_home.git
-2. Once Cloned, Run the dockercompose.yml file using the docker desktop
-     - It will set up the Zookeeper and Kafka Server. It will also spin up a kafka producer which messages a topic called 'user-login' every second
-3. Run oltp, olap python programs - pass the arguments and config according to ur prefernce _TODO: Make changes here_
+2. cd into the cloned directory
+3.  Run requirements.txt to install all the required libs.
+   ```
+   pip install -r requirements.txt
+   ```
+4.  Once Cloned, Run the dockercompose.yml file.
+   ```
+   docker-compose up -d
+   ```
+   - It will set up the Zookeeper and Kafka Server. It will also spin up a kafka producer which messages a topic called 'user-login' every second
+5.  Run olap_consumer.py to start the consumer code which does cleanup job and some processing on the messages received and sends them to another kafka topic called 'processed-user-data'.
+   ```
+   python3 olap_consumer.py
+   ```
+7.  Run realtime_consumer.py to start the consumer code which just consumes the message from the kafka topic and dumps them as a json. This is realtime and you will be able to use the messages faster than olap_consumer.
+   ```
+   python3 realtime_consumer.py
+   ```
 
 ## Design Choices and why i choose them
 
@@ -41,16 +57,16 @@ Before running this project, ensure that you have the following prerequisite ins
 
 ## How would you deploy this application in production?
 
-**Using docker or kubernetes for deployment :** We can package all our code to a docker image for a efficient production pipeline.
+**Making use of CI/CD Pipeline**
 
 ## What other components would you want to add to make this production ready?
 
-
 **Partitions based on a specific key / Dynamic Partitions :** In production we could have partitions based on specific attributes maybe like locale or type of device, it can have wide range of benefits while reading or any other analysis tasks. We can also try Dynamic partitions so that there are no unnecessary skew in our partitions.
-
 
 ## How can this application scale with a growing dataset?
 
 **More than 1 consumer in the consumer group :** The "user-login" producer produces to just 1 partition , which means we can have only 1 consumer. We should make to deliver it to multiple partitions so that we can make use of the "distributed" kakfka consumers to consume messages
+
+**Increasing Batch Size and Async Message Processing**
 
 
