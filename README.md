@@ -8,6 +8,10 @@ Fetch Data Engineer Take Home Assessment : This project demonstrates a real-time
 
 ![kafka3](https://github.com/sreesanjeevkg/fetch_de_take_home/assets/32449066/da9a5b3b-61ba-43da-b698-6e6519ba2dfc)
 
+**NOTE**
+- Cannot keep replication factor more than 1 because there is a single broker
+- Realtime_consumer is just printing the data not publishing to S3
+
 ### Features
 
 - Real-time data processing from a Kafka topic.
